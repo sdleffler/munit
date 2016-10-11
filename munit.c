@@ -1290,6 +1290,10 @@ munit_test_runner_run_suite(MunitTestRunner* runner,
   size_t pre_l;
   char* pre = munit_maybe_concat(&pre_l, (char*) prefix, (char*) suite->prefix);
 
+  size_t save_iters = runner->iterations;
+
+  runner->iterations *= suite->iterations;
+
   /* Run the tests. */
   for (const MunitTest* test = suite->tests ; test != NULL && test->test != NULL ; test++) {
     if (runner->tests != NULL) { /* Specific tests were requested on the CLI */
@@ -1316,6 +1320,7 @@ munit_test_runner_run_suite(MunitTestRunner* runner,
 
  cleanup:
 
+  runner->iterations = save_iters;
   munit_maybe_free_concat(pre, prefix, suite->prefix);
 }
 
@@ -1457,7 +1462,7 @@ munit_suite_main_custom(const MunitSuite* suite, void* user_data,
     .suite = NULL,
     .tests = NULL,
     .seed = 0,
-    .iterations = 0,
+    .iterations = 1,
     .parameters = NULL,
     .single_parameter_mode = false,
     .user_data = NULL,
